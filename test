@@ -1,0 +1,2275 @@
+--// Element Ruby Mobile Edition
+--// Compacto • Moderno • Preto & RGB Dinâmico
+
+local Players      = game:GetService("Players")
+local UIS          = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local RunService   = game:GetService("RunService")
+
+local Player    = Players.LocalPlayer
+local PlayerGui = Player:WaitForChild("PlayerGui")
+
+pcall(function() PlayerGui:FindFirstChild("ElementRuby"):Destroy() end)
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name           = "ElementRuby"
+ScreenGui.ResetOnSpawn   = false
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+ScreenGui.Parent         = PlayerGui
+
+-- ============================================================
+-- SISTEMA RGB
+-- ============================================================
+local function getRGBColor(offset)
+    offset = offset or 0
+    local t = tick() * 0.8 + offset
+    return Color3.new(
+        math.abs(math.sin(t)),
+        math.abs(math.sin(t + 2*math.pi/3)),
+        math.abs(math.sin(t + 4*math.pi/3))
+    )
+end
+
+-- ============================================================
+-- INTERFACE PRINCIPAL
+-- ============================================================
+local Main = Instance.new("Frame")
+Main.Size             = UDim2.fromOffset(270, 220)
+Main.Position         = UDim2.new(0.5,-135, 0.5,-110)
+Main.BackgroundColor3 = Color3.fromRGB(12,12,12)
+Main.BorderSizePixel  = 0
+Main.Parent           = ScreenGui
+Instance.new("UICorner", Main).CornerRadius = UDim.new(0,16)
+
+local Stroke = Instance.new("UIStroke")
+Stroke.Thickness    = 1.5
+Stroke.Transparency = 0.25
+Stroke.Parent       = Main
+
+local TopBar = Instance.new("Frame")
+TopBar.Size             = UDim2.new(1,0,0,42)
+TopBar.BackgroundColor3 = Color3.fromRGB(18,18,18)
+TopBar.BorderSizePixel  = 0
+TopBar.Parent           = Main
+Instance.new("UICorner", TopBar).CornerRadius = UDim.new(0,16)
+
+local Fix = Instance.new("Frame")
+Fix.Size             = UDim2.new(1,0,0,16)
+Fix.Position         = UDim2.new(0,0,1,-16)
+Fix.BackgroundColor3 = Color3.fromRGB(18,18,18)
+Fix.BorderSizePixel  = 0
+Fix.Parent           = TopBar
+
+local Dot = Instance.new("Frame")
+Dot.Size            = UDim2.fromOffset(8,8)
+Dot.Position        = UDim2.new(0,12,0.5,-4)
+Dot.BorderSizePixel = 0
+Dot.Parent          = TopBar
+Instance.new("UICorner", Dot).CornerRadius = UDim.new(1,0)
+
+local Title = Instance.new("TextLabel")
+Title.BackgroundTransparency = 1
+Title.Position           = UDim2.new(0,26,0,0)
+Title.Size               = UDim2.new(0.5,0,1,0)
+Title.Text               = "Element Ruby"
+Title.Font               = Enum.Font.GothamBold
+Title.TextSize           = 14
+Title.TextColor3         = Color3.new(1,1,1)
+Title.TextXAlignment     = Enum.TextXAlignment.Left
+Title.Parent             = TopBar
+
+local MinBtn = Instance.new("TextButton")
+MinBtn.Size             = UDim2.fromOffset(28,28)
+MinBtn.Position         = UDim2.new(1,-68,0.5,-14)
+MinBtn.Text             = "-"
+MinBtn.Font             = Enum.Font.GothamBold
+MinBtn.TextSize         = 18
+MinBtn.TextColor3       = Color3.new(1,1,1)
+MinBtn.BackgroundColor3 = Color3.fromRGB(25,25,25)
+MinBtn.BorderSizePixel  = 0
+MinBtn.Parent           = TopBar
+Instance.new("UICorner", MinBtn).CornerRadius = UDim.new(0,8)
+
+local MaxBtn = Instance.new("TextButton")
+MaxBtn.Size             = UDim2.fromOffset(28,28)
+MaxBtn.Position         = UDim2.new(1,-35,0.5,-14)
+MaxBtn.Text             = "+"
+MaxBtn.Font             = Enum.Font.GothamBold
+MaxBtn.TextSize         = 18
+MaxBtn.TextColor3       = Color3.new(1,1,1)
+MaxBtn.BorderSizePixel  = 0
+MaxBtn.Parent           = TopBar
+Instance.new("UICorner", MaxBtn).CornerRadius = UDim.new(0,8)
+
+local Sidebar = Instance.new("Frame")
+Sidebar.Size             = UDim2.new(0,90,1,-55)
+Sidebar.Position         = UDim2.new(0,8,0,47)
+Sidebar.BackgroundColor3 = Color3.fromRGB(18,18,18)
+Sidebar.BorderSizePixel  = 0
+Sidebar.Parent           = Main
+Instance.new("UICorner", Sidebar).CornerRadius = UDim.new(0,12)
+
+local SideList = Instance.new("UIListLayout")
+SideList.Padding              = UDim.new(0,4)
+SideList.HorizontalAlignment  = Enum.HorizontalAlignment.Center
+SideList.Parent               = Sidebar
+local SidePad = Instance.new("UIPadding")
+SidePad.PaddingTop = UDim.new(0,8)
+SidePad.Parent     = Sidebar
+
+local Content = Instance.new("Frame")
+Content.Size             = UDim2.new(1,-105,1,-55)
+Content.Position         = UDim2.new(0,100,0,47)
+Content.BackgroundColor3 = Color3.fromRGB(18,18,18)
+Content.BorderSizePixel  = 0
+Content.Parent           = Main
+Instance.new("UICorner", Content).CornerRadius = UDim.new(0,12)
+
+local Pages = {}
+local function CreatePage(name)
+    local p = Instance.new("Frame")
+    p.Name               = name
+    p.Size               = UDim2.new(1,0,1,0)
+    p.BackgroundTransparency = 1
+    p.Visible            = false
+    p.Parent             = Content
+    Pages[name]          = p
+    return p
+end
+
+-- ============================================================
+-- HOME
+-- ============================================================
+local Home = CreatePage("Home")
+Home.Visible = true
+
+local HomeTitle = Instance.new("TextLabel")
+HomeTitle.BackgroundTransparency = 1
+HomeTitle.Size       = UDim2.new(1,0,0,35)
+HomeTitle.Position   = UDim2.new(0,0,0,10)
+HomeTitle.Text       = "Element Ruby"
+HomeTitle.Font       = Enum.Font.GothamBold
+HomeTitle.TextSize   = 14
+HomeTitle.TextColor3 = Color3.new(1,1,1)
+HomeTitle.Parent     = Home
+
+local HomeDesc = Instance.new("TextLabel")
+HomeDesc.BackgroundTransparency = 1
+HomeDesc.Size        = UDim2.new(1,-16,0,60)
+HomeDesc.Position    = UDim2.new(0,8,0,45)
+HomeDesc.TextWrapped = true
+HomeDesc.Text        = "Modern Mobile\nRuby Edition"
+HomeDesc.Font        = Enum.Font.Gotham
+HomeDesc.TextSize    = 10
+HomeDesc.TextColor3  = Color3.fromRGB(180,180,180)
+HomeDesc.Parent      = Home
+
+-- ============================================================
+-- CRÉDITOS
+-- ============================================================
+local Credits = CreatePage("Creditos")
+local CredL = Instance.new("UIListLayout")
+CredL.Padding             = UDim.new(0,8)
+CredL.HorizontalAlignment = Enum.HorizontalAlignment.Center
+CredL.Parent              = Credits
+local CredPad = Instance.new("UIPadding")
+CredPad.PaddingTop = UDim.new(0,12)
+CredPad.Parent     = Credits
+
+local CapsuleStrokes = {}
+
+local function MakeCapsule(parent, text)
+    local cap = Instance.new("Frame")
+    cap.Size             = UDim2.new(1,-12,0,32)
+    cap.BackgroundColor3 = Color3.fromRGB(24,24,24)
+    cap.BorderSizePixel  = 0
+    cap.Parent           = parent
+    Instance.new("UICorner", cap).CornerRadius = UDim.new(0,10)
+    local st = Instance.new("UIStroke")
+    st.Transparency = 0.55
+    st.Thickness    = 1
+    st.Parent       = cap
+    table.insert(CapsuleStrokes, st)
+    local lbl = Instance.new("TextLabel")
+    lbl.BackgroundTransparency = 1
+    lbl.Size             = UDim2.new(1,-12,1,0)
+    lbl.Position         = UDim2.new(0,12,0,0)
+    lbl.Text             = text
+    lbl.TextXAlignment   = Enum.TextXAlignment.Left
+    lbl.Font             = Enum.Font.GothamMedium
+    lbl.TextSize         = 10
+    lbl.TextColor3       = Color3.new(1,1,1)
+    lbl.Parent           = cap
+    return cap, st
+end
+
+MakeCapsule(Credits, "Creator: Angelxz7k")
+MakeCapsule(Credits, "L-Dev: zshayas")
+MakeCapsule(Credits, "Dev: yPlzinn7")
+MakeCapsule(Credits, "Dev: whatblackbagbro")
+
+-- ============================================================
+-- ESP PAGE
+-- ============================================================
+local EspPage = CreatePage("Ruby Esp")
+
+local EspScroll = Instance.new("ScrollingFrame")
+EspScroll.Size                = UDim2.new(1,0,1,0)
+EspScroll.BackgroundTransparency = 1
+EspScroll.BorderSizePixel     = 0
+EspScroll.ScrollBarThickness  = 2
+EspScroll.ScrollBarImageColor3= Color3.fromRGB(180,0,0)
+EspScroll.CanvasSize          = UDim2.fromOffset(0,0)
+EspScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+EspScroll.Parent              = EspPage
+
+local EspLayout = Instance.new("UIListLayout")
+EspLayout.Padding             = UDim.new(0,7)
+EspLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+EspLayout.Parent              = EspScroll
+local EspPad = Instance.new("UIPadding")
+EspPad.PaddingTop    = UDim.new(0,10)
+EspPad.PaddingBottom = UDim.new(0,8)
+EspPad.Parent        = EspScroll
+
+-- ============================================================
+-- ESTADO DO ESP
+-- ============================================================
+local IgnoredTeams   = {}
+local IgnoredPlayers = {}
+
+-- ============================================================
+-- COR DO TIME
+-- ============================================================
+local function GetTeamColor(plr)
+    if plr.Team then
+        return plr.Team.TeamColor.Color
+    end
+    return Color3.fromRGB(200,200,200)
+end
+
+local Camera = workspace.CurrentCamera
+
+-- ============================================================
+-- RUBY ESP GAME
+-- ============================================================
+local GameEspEnabled = false
+local GameEspObjects = {}  -- [player] = { box, nameL, hpL, distL }
+
+local GameEspCap = Instance.new("Frame")
+GameEspCap.Size             = UDim2.new(1,-12,0,32)
+GameEspCap.BackgroundColor3 = Color3.fromRGB(24,24,24)
+GameEspCap.BorderSizePixel  = 0
+GameEspCap.Parent           = EspScroll
+Instance.new("UICorner", GameEspCap).CornerRadius = UDim.new(0,10)
+local GameEspSt = Instance.new("UIStroke")
+GameEspSt.Transparency = 0.55
+GameEspSt.Thickness    = 1
+GameEspSt.Parent       = GameEspCap
+table.insert(CapsuleStrokes, GameEspSt)
+
+local GameEspLabel = Instance.new("TextLabel")
+GameEspLabel.BackgroundTransparency = 1
+GameEspLabel.Size          = UDim2.new(1,-60,1,0)
+GameEspLabel.Position      = UDim2.new(0,12,0,0)
+GameEspLabel.Text          = "Ruby Esp Game"
+GameEspLabel.TextXAlignment= Enum.TextXAlignment.Left
+GameEspLabel.Font          = Enum.Font.GothamBold
+GameEspLabel.TextSize      = 10
+GameEspLabel.TextColor3    = Color3.new(1,1,1)
+GameEspLabel.Parent        = GameEspCap
+
+local GameEspBtn = Instance.new("TextButton")
+GameEspBtn.Size             = UDim2.fromOffset(40,20)
+GameEspBtn.Position         = UDim2.new(1,-48,0.5,-10)
+GameEspBtn.Text             = "OFF"
+GameEspBtn.Font             = Enum.Font.GothamBold
+GameEspBtn.TextSize         = 9
+GameEspBtn.TextColor3       = Color3.new(1,1,1)
+GameEspBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
+GameEspBtn.BorderSizePixel  = 0
+GameEspBtn.Parent           = GameEspCap
+Instance.new("UICorner", GameEspBtn).CornerRadius = UDim.new(0,6)
+local GameEspBtnSt = Instance.new("UIStroke")
+GameEspBtnSt.Color     = Color3.fromRGB(60,60,60)
+GameEspBtnSt.Thickness = 1
+GameEspBtnSt.Parent    = GameEspBtn
+
+-- Cria os Drawing objects para um player (sistema Square do Shark)
+local function CreateGameEsp(plr)
+    if GameEspObjects[plr] then return end
+    local box  = Drawing.new("Square")
+    box.Thickness = 1.5
+    box.Filled    = false
+    box.Visible   = false
+
+    local nameL = Drawing.new("Text")
+    nameL.Size        = 13
+    nameL.Outline     = true
+    nameL.OutlineColor= Color3.new(0,0,0)
+    nameL.Center      = true
+    nameL.Visible     = false
+
+    local hpL = Drawing.new("Text")
+    hpL.Size        = 11
+    hpL.Outline     = true
+    hpL.OutlineColor= Color3.new(0,0,0)
+    hpL.Center      = true
+    hpL.Visible     = false
+
+    local distL = Drawing.new("Text")
+    distL.Size        = 11
+    distL.Outline     = true
+    distL.OutlineColor= Color3.new(0,0,0)
+    distL.Center      = true
+    distL.Visible     = false
+
+    GameEspObjects[plr] = { box=box, nameL=nameL, hpL=hpL, distL=distL }
+end
+
+local function DestroyGameEsp(plr)
+    local obj = GameEspObjects[plr]
+    if not obj then return end
+    for _, d in pairs(obj) do pcall(function() d:Remove() end) end
+    GameEspObjects[plr] = nil
+end
+
+local function HideGameEsp(plr)
+    local obj = GameEspObjects[plr]
+    if not obj then return end
+    for _, d in pairs(obj) do d.Visible = false end
+end
+
+local function UpdateGameEsp(plr)
+    local obj = GameEspObjects[plr]
+    if not obj then return end
+
+    if IgnoredPlayers[plr.Name] then HideGameEsp(plr) return end
+    if plr.Team and IgnoredTeams[plr.Team.Name] then HideGameEsp(plr) return end
+
+    local char = plr.Character
+    if not char then HideGameEsp(plr) return end
+
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if not hrp or not hum then HideGameEsp(plr) return end
+
+    local pos, onScreen = Camera:WorldToViewportPoint(hrp.Position)
+    if not onScreen then HideGameEsp(plr) return end
+
+    -- Tamanho do box baseado na distância (mesmo cálculo do Shark)
+    local sizeY = (Camera:WorldToViewportPoint(hrp.Position + Vector3.new(0,3,0)).Y
+                 - Camera:WorldToViewportPoint(hrp.Position - Vector3.new(0,3,0)).Y)
+    local boxW  = sizeY * 1.5
+    local boxH  = sizeY * 2
+
+    local col = GetTeamColor(plr)
+
+    -- Box (Square)
+    obj.box.Size     = Vector2.new(boxW, boxH)
+    obj.box.Position = Vector2.new(pos.X - boxW/2, pos.Y - boxH/2)
+    obj.box.Color    = col
+    obj.box.Visible  = true
+
+    local topY = pos.Y - boxH/2
+    local cx   = pos.X
+
+    -- Username
+    obj.nameL.Text     = plr.Name
+    obj.nameL.Position = Vector2.new(cx, topY - 38)
+    obj.nameL.Color    = Color3.new(1,1,1)
+    obj.nameL.Visible  = true
+
+    -- HP (verde → amarelo → vermelho)
+    local hp    = math.floor(hum.Health)
+    local maxhp = math.floor(hum.MaxHealth)
+    local ratio = maxhp > 0 and (hp / maxhp) or 0
+    obj.hpL.Text     = hp .."/".. maxhp .." HP"
+    obj.hpL.Position = Vector2.new(cx, topY - 25)
+    obj.hpL.Color    = Color3.fromRGB(
+        math.floor((1 - ratio) * 255),
+        math.floor(ratio * 210),
+        50
+    )
+    obj.hpL.Visible = true
+
+    -- Distância até meu personagem
+    local myChar = Player.Character
+    local dist = 0
+    if myChar then
+        local myHRP = myChar:FindFirstChild("HumanoidRootPart")
+        if myHRP then
+            dist = math.floor((myHRP.Position - hrp.Position).Magnitude)
+        end
+    end
+    obj.distL.Text     = dist .."m"
+    obj.distL.Position = Vector2.new(cx, topY - 13)
+    obj.distL.Color    = Color3.fromRGB(200,200,200)
+    obj.distL.Visible  = true
+end
+
+local function SetGameEsp(state)
+    GameEspEnabled = state
+    if state then
+        GameEspBtn.Text = "ON"
+        TweenService:Create(GameEspBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(180,0,0)}):Play()
+        GameEspBtnSt.Color = Color3.fromRGB(255,60,60)
+        for _, plr in ipairs(Players:GetPlayers()) do
+            if plr ~= Player then
+                DestroyGameEsp(plr)
+                CreateGameEsp(plr)
+            end
+        end
+    else
+        GameEspBtn.Text = "OFF"
+        TweenService:Create(GameEspBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(30,30,30)}):Play()
+        GameEspBtnSt.Color = Color3.fromRGB(60,60,60)
+        for plr in pairs(GameEspObjects) do
+            DestroyGameEsp(plr)
+        end
+    end
+end
+
+GameEspBtn.MouseButton1Click:Connect(function()
+    SetGameEsp(not GameEspEnabled)
+end)
+
+-- Heartbeat: atualiza o Game ESP todo frame
+RunService.Heartbeat:Connect(function()
+    if GameEspEnabled then
+        for plr in pairs(GameEspObjects) do
+            UpdateGameEsp(plr)
+        end
+    end
+end)
+
+-- Limpa ao sair / respeita respawn
+Players.PlayerRemoving:Connect(function(plr)
+    DestroyGameEsp(plr)
+end)
+
+Players.PlayerAdded:Connect(function(plr)
+    if plr == Player then return end
+    plr.CharacterAdded:Connect(function()
+        if GameEspEnabled then
+            task.wait(0.2)
+            DestroyGameEsp(plr)
+            CreateGameEsp(plr)
+        end
+    end)
+    plr.CharacterRemoving:Connect(function()
+        HideGameEsp(plr)
+    end)
+end)
+
+-- ============================================================
+-- ESP TEAM FILTER
+-- ============================================================
+local TeamSection = Instance.new("Frame")
+TeamSection.Size             = UDim2.new(1,-12,0,32)
+TeamSection.BackgroundColor3 = Color3.fromRGB(24,24,24)
+TeamSection.BorderSizePixel  = 0
+TeamSection.Parent           = EspScroll
+Instance.new("UICorner", TeamSection).CornerRadius = UDim.new(0,10)
+local TeamSt = Instance.new("UIStroke")
+TeamSt.Transparency = 0.55
+TeamSt.Thickness    = 1
+TeamSt.Parent       = TeamSection
+table.insert(CapsuleStrokes, TeamSt)
+
+local TeamLabel = Instance.new("TextLabel")
+TeamLabel.BackgroundTransparency = 1
+TeamLabel.Size           = UDim2.new(1,-40,1,0)
+TeamLabel.Position       = UDim2.new(0,12,0,0)
+TeamLabel.Text           = "Ruby Esp Team"
+TeamLabel.TextXAlignment = Enum.TextXAlignment.Left
+TeamLabel.Font           = Enum.Font.GothamBold
+TeamLabel.TextSize       = 10
+TeamLabel.TextColor3     = Color3.new(1,1,1)
+TeamLabel.Parent         = TeamSection
+
+local TeamArrow = Instance.new("TextButton")
+TeamArrow.Size             = UDim2.fromOffset(24,24)
+TeamArrow.Position         = UDim2.new(1,-30,0.5,-12)
+TeamArrow.Text             = "▼"
+TeamArrow.Font             = Enum.Font.GothamBold
+TeamArrow.TextSize         = 11
+TeamArrow.TextColor3       = Color3.new(1,1,1)
+TeamArrow.BackgroundColor3 = Color3.fromRGB(35,35,35)
+TeamArrow.BorderSizePixel  = 0
+TeamArrow.Parent           = TeamSection
+Instance.new("UICorner", TeamArrow).CornerRadius = UDim.new(0,6)
+
+local TeamDropdown = Instance.new("Frame")
+TeamDropdown.Size             = UDim2.new(1,-12,0,0)
+TeamDropdown.BackgroundColor3 = Color3.fromRGB(20,20,20)
+TeamDropdown.BorderSizePixel  = 0
+TeamDropdown.Visible          = false
+TeamDropdown.ClipsDescendants = true
+TeamDropdown.Parent           = EspScroll
+Instance.new("UICorner", TeamDropdown).CornerRadius = UDim.new(0,8)
+local TDSt = Instance.new("UIStroke")
+TDSt.Transparency = 0.7
+TDSt.Thickness    = 1
+TDSt.Parent       = TeamDropdown
+table.insert(CapsuleStrokes, TDSt)
+
+local TeamDropLayout = Instance.new("UIListLayout")
+TeamDropLayout.Padding             = UDim.new(0,4)
+TeamDropLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+TeamDropLayout.Parent              = TeamDropdown
+local TDPad = Instance.new("UIPadding")
+TDPad.PaddingTop    = UDim.new(0,6)
+TDPad.PaddingBottom = UDim.new(0,6)
+TDPad.Parent        = TeamDropdown
+
+local teamDropOpen = false
+local teamItems    = {}
+
+local function PopulateTeams()
+    for _, v in ipairs(TeamDropdown:GetChildren()) do
+        if v:IsA("Frame") then v:Destroy() end
+    end
+    teamItems = {}
+
+    local teamNames = {}
+    local ok, svc = pcall(function() return game:GetService("Teams") end)
+    if ok and svc then
+        for _, t in ipairs(svc:GetTeams()) do
+            table.insert(teamNames, t.Name)
+        end
+    end
+    if #teamNames == 0 then
+        for _, plr in ipairs(Players:GetPlayers()) do
+            if plr.Team then
+                local dup = false
+                for _, n in ipairs(teamNames) do if n == plr.Team.Name then dup=true break end end
+                if not dup then table.insert(teamNames, plr.Team.Name) end
+            end
+        end
+    end
+    if #teamNames == 0 then table.insert(teamNames, "Sem times detectados") end
+
+    for _, tn in ipairs(teamNames) do
+        local row = Instance.new("Frame")
+        row.Size             = UDim2.new(1,-10,0,28)
+        row.BackgroundColor3 = Color3.fromRGB(30,30,30)
+        row.BorderSizePixel  = 0
+        row.Parent           = TeamDropdown
+        Instance.new("UICorner", row).CornerRadius = UDim.new(0,7)
+
+        local rl = Instance.new("TextLabel")
+        rl.BackgroundTransparency = 1
+        rl.Size           = UDim2.new(1,-36,1,0)
+        rl.Position       = UDim2.new(0,10,0,0)
+        rl.Text           = tn
+        rl.Font           = Enum.Font.Gotham
+        rl.TextSize       = 10
+        rl.TextColor3     = Color3.new(1,1,1)
+        rl.TextXAlignment = Enum.TextXAlignment.Left
+        rl.Parent         = row
+
+        local dot = Instance.new("Frame")
+        dot.Size            = UDim2.fromOffset(10,10)
+        dot.Position        = UDim2.new(1,-20,0.5,-5)
+                dot.BackgroundColor3= IgnoredTeams[tn] and Color3.fromRGB(180,0,0) or Color3.fromRGB(40,40,40)
+        dot.BorderSizePixel = 0
+        dot.Parent          = row
+        Instance.new("UICorner", dot).CornerRadius = UDim.new(1,0)
+
+        local btn = Instance.new("TextButton")
+        btn.Size                 = UDim2.new(1,0,1,0)
+        btn.BackgroundTransparency = 1
+        btn.Text                 = ""
+        btn.Parent               = row
+
+        teamItems[tn] = {row=row, dot=dot}
+
+        btn.MouseButton1Click:Connect(function()
+            if IgnoredTeams[tn] then
+                IgnoredTeams[tn] = nil
+                dot.BackgroundColor3 = Color3.fromRGB(40,40,40)
+            else
+                IgnoredTeams[tn] = true
+                dot.BackgroundColor3 = Color3.fromRGB(180,0,0)
+            end
+        end)
+    end
+
+    local count = math.max(#teamNames,1)
+    TeamDropdown.Size = UDim2.new(1,-12,0, count*(28+4)+12)
+end
+
+TeamArrow.MouseButton1Click:Connect(function()
+    teamDropOpen = not teamDropOpen
+    if teamDropOpen then
+        PopulateTeams()
+        TeamDropdown.Visible = true
+        TeamArrow.Text = "▲"
+    else
+        TeamDropdown.Visible = false
+        TeamArrow.Text = "▼"
+    end
+end)
+
+-- ============================================================
+-- ESP PLAYER FILTER
+-- ============================================================
+local PlayerSection = Instance.new("Frame")
+PlayerSection.Size             = UDim2.new(1,-12,0,32)
+PlayerSection.BackgroundColor3 = Color3.fromRGB(24,24,24)
+PlayerSection.BorderSizePixel  = 0
+PlayerSection.Parent           = EspScroll
+Instance.new("UICorner", PlayerSection).CornerRadius = UDim.new(0,10)
+local PlrSecSt = Instance.new("UIStroke")
+PlrSecSt.Transparency = 0.55
+PlrSecSt.Thickness    = 1
+PlrSecSt.Parent       = PlayerSection
+table.insert(CapsuleStrokes, PlrSecSt)
+
+local PlrSecLabel = Instance.new("TextLabel")
+PlrSecLabel.BackgroundTransparency = 1
+PlrSecLabel.Size           = UDim2.new(1,-40,1,0)
+PlrSecLabel.Position       = UDim2.new(0,12,0,0)
+PlrSecLabel.Text           = "Ruby Esp Players"
+PlrSecLabel.TextXAlignment = Enum.TextXAlignment.Left
+PlrSecLabel.Font           = Enum.Font.GothamBold
+PlrSecLabel.TextSize       = 10
+PlrSecLabel.TextColor3     = Color3.new(1,1,1)
+PlrSecLabel.Parent         = PlayerSection
+
+local PlayerArrow = Instance.new("TextButton")
+PlayerArrow.Size             = UDim2.fromOffset(24,24)
+PlayerArrow.Position         = UDim2.new(1,-30,0.5,-12)
+PlayerArrow.Text             = "▼"
+PlayerArrow.Font             = Enum.Font.GothamBold
+PlayerArrow.TextSize         = 11
+PlayerArrow.TextColor3       = Color3.new(1,1,1)
+PlayerArrow.BackgroundColor3 = Color3.fromRGB(35,35,35)
+PlayerArrow.BorderSizePixel  = 0
+PlayerArrow.Parent           = PlayerSection
+Instance.new("UICorner", PlayerArrow).CornerRadius = UDim.new(0,6)
+
+local PlayerDropdown = Instance.new("Frame")
+PlayerDropdown.Size             = UDim2.new(1,-12,0,0)
+PlayerDropdown.BackgroundColor3 = Color3.fromRGB(20,20,20)
+PlayerDropdown.BorderSizePixel  = 0
+PlayerDropdown.Visible          = false
+PlayerDropdown.ClipsDescendants = true
+PlayerDropdown.Parent           = EspScroll
+Instance.new("UICorner", PlayerDropdown).CornerRadius = UDim.new(0,8)
+local PDSt = Instance.new("UIStroke")
+PDSt.Transparency = 0.7
+PDSt.Thickness    = 1
+PDSt.Parent       = PlayerDropdown
+table.insert(CapsuleStrokes, PDSt)
+
+local PlrDropInner = Instance.new("Frame")
+PlrDropInner.Size                 = UDim2.new(1,0,1,0)
+PlrDropInner.BackgroundTransparency = 1
+PlrDropInner.Parent               = PlayerDropdown
+
+local PlrDropLayout = Instance.new("UIListLayout")
+PlrDropLayout.Padding             = UDim.new(0,4)
+PlrDropLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+PlrDropLayout.SortOrder           = Enum.SortOrder.LayoutOrder
+PlrDropLayout.Parent              = PlrDropInner
+local PDIPad = Instance.new("UIPadding")
+PDIPad.PaddingTop    = UDim.new(0,6)
+PDIPad.PaddingBottom = UDim.new(0,6)
+PDIPad.Parent        = PlrDropInner
+
+local SearchBox = Instance.new("TextBox")
+SearchBox.Size               = UDim2.new(1,-10,0,26)
+SearchBox.BackgroundColor3   = Color3.fromRGB(30,30,30)
+SearchBox.BorderSizePixel    = 0
+SearchBox.PlaceholderText    = "Selecione Jogadores..."
+SearchBox.PlaceholderColor3  = Color3.fromRGB(120,120,120)
+SearchBox.Text               = ""
+SearchBox.Font               = Enum.Font.Gotham
+SearchBox.TextSize           = 10
+SearchBox.TextColor3         = Color3.new(1,1,1)
+SearchBox.ClearTextOnFocus   = false
+SearchBox.LayoutOrder        = 0
+SearchBox.Parent             = PlrDropInner
+Instance.new("UICorner", SearchBox).CornerRadius = UDim.new(0,7)
+local SBPad = Instance.new("UIPadding")
+SBPad.PaddingLeft = UDim.new(0,8)
+SBPad.Parent      = SearchBox
+
+local playerDropOpen  = false
+local playerRowFrames = {}
+
+local function BuildPlayerRows(filter)
+    for _, v in ipairs(PlrDropInner:GetChildren()) do
+        if v:IsA("Frame") then v:Destroy() end
+    end
+    playerRowFrames = {}
+
+    local count = 0
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= Player then
+        local name = plr.Name
+        local showRow = true
+        if filter and filter ~= "" then
+            if not string.find(string.lower(name), string.lower(filter), 1, true) then
+                showRow = false
+            end
+        end
+        if showRow then
+        count = count + 1
+
+        local row = Instance.new("Frame")
+        row.Size             = UDim2.new(1,-10,0,28)
+        row.BackgroundColor3 = Color3.fromRGB(30,30,30)
+        row.BorderSizePixel  = 0
+        row.LayoutOrder      = count
+        row.Parent           = PlrDropInner
+        Instance.new("UICorner", row).CornerRadius = UDim.new(0,7)
+
+        local lbl = Instance.new("TextLabel")
+        lbl.BackgroundTransparency = 1
+        lbl.Size           = UDim2.new(1,-36,1,0)
+        lbl.Position       = UDim2.new(0,10,0,0)
+        lbl.Text           = name
+        lbl.Font           = Enum.Font.Gotham
+        lbl.TextSize       = 10
+        lbl.TextColor3     = Color3.new(1,1,1)
+        lbl.TextXAlignment = Enum.TextXAlignment.Left
+        lbl.Parent         = row
+
+        local dot = Instance.new("Frame")
+        dot.Size             = UDim2.fromOffset(10,10)
+        dot.Position         = UDim2.new(1,-20,0.5,-5)
+        dot.BackgroundColor3 = IgnoredPlayers[name] and Color3.fromRGB(180,0,0) or Color3.fromRGB(40,40,40)
+        dot.BorderSizePixel  = 0
+        dot.Parent           = row
+        Instance.new("UICorner", dot).CornerRadius = UDim.new(1,0)
+
+        local btn = Instance.new("TextButton")
+        btn.Size                 = UDim2.new(1,0,1,0)
+        btn.BackgroundTransparency = 1
+        btn.Text                 = ""
+        btn.Parent               = row
+
+        playerRowFrames[name] = {row=row, dot=dot}
+
+        btn.MouseButton1Click:Connect(function()
+            if IgnoredPlayers[name] then
+                IgnoredPlayers[name] = nil
+                dot.BackgroundColor3 = Color3.fromRGB(40,40,40)
+            else
+                IgnoredPlayers[name] = true
+                dot.BackgroundColor3 = Color3.fromRGB(180,0,0)
+            end
+        end)
+        end -- if showRow
+        end -- if plr ~= Player
+    end
+
+    PlayerDropdown.Size = UDim2.new(1,-12,0, math.max(count*(28+4)+40, 50))
+end
+
+SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+    BuildPlayerRows(SearchBox.Text)
+end)
+
+PlayerArrow.MouseButton1Click:Connect(function()
+    playerDropOpen = not playerDropOpen
+    if playerDropOpen then
+        PlayerDropdown.Visible = true
+        PlayerArrow.Text = "▲"
+        BuildPlayerRows("")
+    else
+        PlayerDropdown.Visible = false
+        PlayerArrow.Text = "▼"
+    end
+end)
+
+Players.PlayerRemoving:Connect(function(plr)
+    if playerRowFrames[plr.Name] then
+        playerRowFrames[plr.Name].row:Destroy()
+        playerRowFrames[plr.Name] = nil
+    end
+end)
+
+-- ============================================================
+-- RUBY PLAYER PAGE
+-- ============================================================
+local PlayerPage = CreatePage("Ruby Player")
+
+local PlrScroll = Instance.new("ScrollingFrame")
+PlrScroll.Size                = UDim2.new(1,0,1,0)
+PlrScroll.BackgroundTransparency = 1
+PlrScroll.BorderSizePixel     = 0
+PlrScroll.ScrollBarThickness  = 2
+PlrScroll.ScrollBarImageColor3= Color3.fromRGB(180,0,0)
+PlrScroll.CanvasSize          = UDim2.fromOffset(0,0)
+PlrScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+PlrScroll.Parent              = PlayerPage
+
+local PlrLayout = Instance.new("UIListLayout")
+PlrLayout.Padding             = UDim.new(0,7)
+PlrLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+PlrLayout.Parent              = PlrScroll
+local PlrPagePad = Instance.new("UIPadding")
+PlrPagePad.PaddingTop    = UDim.new(0,10)
+PlrPagePad.PaddingBottom = UDim.new(0,8)
+PlrPagePad.Parent        = PlrScroll
+
+-- Helper: cápsula com seta (dropdown)
+local function MakeDropCap(parent, labelText)
+    local cap = Instance.new("Frame")
+    cap.Size             = UDim2.new(1,-12,0,32)
+    cap.BackgroundColor3 = Color3.fromRGB(24,24,24)
+    cap.BorderSizePixel  = 0
+    cap.Parent           = parent
+    Instance.new("UICorner", cap).CornerRadius = UDim.new(0,10)
+    local st = Instance.new("UIStroke")
+    st.Transparency = 0.55
+    st.Thickness    = 1
+    st.Parent       = cap
+    table.insert(CapsuleStrokes, st)
+
+    local lbl = Instance.new("TextLabel")
+    lbl.BackgroundTransparency = 1
+    lbl.Size             = UDim2.new(1,-40,1,0)
+    lbl.Position         = UDim2.new(0,12,0,0)
+    lbl.Text             = labelText
+    lbl.TextXAlignment   = Enum.TextXAlignment.Left
+    lbl.Font             = Enum.Font.GothamBold
+    lbl.TextSize         = 10
+    lbl.TextColor3       = Color3.new(1,1,1)
+    lbl.Parent           = cap
+
+    local arrow = Instance.new("TextButton")
+    arrow.Size             = UDim2.fromOffset(24,24)
+    arrow.Position         = UDim2.new(1,-30,0.5,-12)
+    arrow.Text             = "▼"
+    arrow.Font             = Enum.Font.GothamBold
+    arrow.TextSize         = 11
+    arrow.TextColor3       = Color3.new(1,1,1)
+    arrow.BackgroundColor3 = Color3.fromRGB(35,35,35)
+    arrow.BorderSizePixel  = 0
+    arrow.Parent           = cap
+    Instance.new("UICorner", arrow).CornerRadius = UDim.new(0,6)
+
+    return cap, arrow
+end
+
+-- Helper: cápsula com Power ON/OFF
+local function MakePowerCap(parent, labelText)
+    local cap = Instance.new("Frame")
+    cap.Size             = UDim2.new(1,-12,0,32)
+    cap.BackgroundColor3 = Color3.fromRGB(24,24,24)
+    cap.BorderSizePixel  = 0
+    cap.Parent           = parent
+    Instance.new("UICorner", cap).CornerRadius = UDim.new(0,10)
+    local st = Instance.new("UIStroke")
+    st.Transparency = 0.55
+    st.Thickness    = 1
+    st.Parent       = cap
+    table.insert(CapsuleStrokes, st)
+
+    local lbl = Instance.new("TextLabel")
+    lbl.BackgroundTransparency = 1
+    lbl.Size             = UDim2.new(1,-60,1,0)
+    lbl.Position         = UDim2.new(0,12,0,0)
+    lbl.Text             = labelText
+    lbl.TextXAlignment   = Enum.TextXAlignment.Left
+    lbl.Font             = Enum.Font.GothamBold
+    lbl.TextSize         = 10
+    lbl.TextColor3       = Color3.new(1,1,1)
+    lbl.Parent           = cap
+
+    local pwrBtn = Instance.new("TextButton")
+    pwrBtn.Size             = UDim2.fromOffset(40,20)
+    pwrBtn.Position         = UDim2.new(1,-48,0.5,-10)
+    pwrBtn.Text             = "OFF"
+    pwrBtn.Font             = Enum.Font.GothamBold
+    pwrBtn.TextSize         = 9
+    pwrBtn.TextColor3       = Color3.new(1,1,1)
+    pwrBtn.BackgroundColor3 = Color3.fromRGB(30,30,30)
+    pwrBtn.BorderSizePixel  = 0
+    pwrBtn.Parent           = cap
+    Instance.new("UICorner", pwrBtn).CornerRadius = UDim.new(0,6)
+    local pwrSt = Instance.new("UIStroke")
+    pwrSt.Color     = Color3.fromRGB(60,60,60)
+    pwrSt.Thickness = 1
+    pwrSt.Parent    = pwrBtn
+
+    return cap, pwrBtn, pwrSt
+end
+
+-- Helper: painel dropdown simples (TextBox de velocidade)
+local function MakeSpeedPanel(parent)
+    local panel = Instance.new("Frame")
+    panel.Size             = UDim2.new(1,-12,0,40)
+    panel.BackgroundColor3 = Color3.fromRGB(20,20,20)
+    panel.BorderSizePixel  = 0
+    panel.Visible          = false
+    panel.Parent           = parent
+    Instance.new("UICorner", panel).CornerRadius = UDim.new(0,8)
+    local pSt = Instance.new("UIStroke")
+    pSt.Transparency = 0.7
+    pSt.Thickness    = 1
+    pSt.Parent       = panel
+    table.insert(CapsuleStrokes, pSt)
+
+    local pad = Instance.new("UIPadding")
+    pad.PaddingLeft   = UDim.new(0,10)
+    pad.PaddingRight  = UDim.new(0,10)
+    pad.PaddingTop    = UDim.new(0,7)
+    pad.PaddingBottom = UDim.new(0,7)
+    pad.Parent        = panel
+
+    local tb = Instance.new("TextBox")
+    tb.Size               = UDim2.new(1,0,1,0)
+    tb.BackgroundColor3   = Color3.fromRGB(30,30,30)
+    tb.BorderSizePixel    = 0
+    tb.PlaceholderText    = "Definir Velocidade"
+    tb.PlaceholderColor3  = Color3.fromRGB(120,120,120)
+    tb.Text               = ""
+    tb.Font               = Enum.Font.GothamMedium
+    tb.TextSize           = 10
+    tb.TextColor3         = Color3.new(1,1,1)
+    tb.ClearTextOnFocus   = false
+    tb.Parent             = panel
+    Instance.new("UICorner", tb).CornerRadius = UDim.new(0,6)
+    local tbPad = Instance.new("UIPadding")
+    tbPad.PaddingLeft = UDim.new(0,8)
+    tbPad.Parent      = tb
+
+    return panel, tb
+end
+
+-- =====================
+-- RUBY FLY
+-- =====================
+local _, FlyArrow = MakeDropCap(PlrScroll, "Ruby Fly")
+local FlyPanel, FlyBox = MakeSpeedPanel(PlrScroll)
+
+local flyOpen    = false
+local flyEnabled = false
+local flySpeed   = 50
+local flyConn    = nil
+local flyBV      = nil
+
+FlyArrow.MouseButton1Click:Connect(function()
+    flyOpen = not flyOpen
+    FlyPanel.Visible = flyOpen
+    FlyArrow.Text = flyOpen and "▲" or "▼"
+end)
+
+-- Fly logic: direção baseada no analógico + inclinação da câmera
+local function StartFly()
+    flyEnabled = true
+    local char = Player.Character
+    if not char then return end
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if not hrp or not hum then return end
+
+    hum.PlatformStand = true
+
+    flyBV = Instance.new("BodyVelocity")
+    flyBV.MaxForce = Vector3.new(1e5, 1e5, 1e5)
+    flyBV.Velocity = Vector3.zero
+    flyBV.Parent   = hrp
+
+    local BG = Instance.new("BodyGyro")
+    BG.MaxTorque = Vector3.new(1e5, 1e5, 1e5)
+    BG.P         = 1e4
+    BG.Parent    = hrp
+
+    flyConn = RunService.Heartbeat:Connect(function()
+        if not flyEnabled then
+            if flyBV and flyBV.Parent then flyBV:Destroy() end
+            if BG and BG.Parent then BG:Destroy() end
+            if hum then hum.PlatformStand = false end
+            flyConn:Disconnect()
+            flyConn = nil
+            return
+        end
+
+        local camCF  = workspace.CurrentCamera.CFrame
+        local look   = camCF.LookVector   -- direção que a câmera aponta (inclui Y)
+        local right  = camCF.RightVector
+
+        -- Analógico: MoveDirection é normalizado no plano XZ pelo Roblox
+        -- md.Z < 0 = pra frente, md.Z > 0 = pra trás
+        -- md.X > 0 = direita,    md.X < 0 = esquerda
+        local md = hum.MoveDirection
+
+        local vel = Vector3.zero
+
+        if md.Magnitude > 0.05 then
+            -- Eixo frontal: usa o LookVector COMPLETO da câmera (com Y)
+            -- Assim arrastar pra frente + câmera pra cima = sobe
+            -- Arrastar pra frente + câmera pra baixo = desce
+            local fwd = look  -- inclui inclinação vertical
+
+            -- Eixo lateral: usa só o componente horizontal do RightVector
+            local rgt = Vector3.new(right.X, 0, right.Z)
+            if rgt.Magnitude > 0 then rgt = rgt.Unit end
+
+            -- md.Z negativo = frente, positivo = trás
+            -- md.X positivo = direita, negativo = esquerda
+            vel = (fwd * -md.Z) + (rgt * md.X)
+        end
+
+        if vel.Magnitude > 0.01 then
+            flyBV.Velocity = vel.Unit * flySpeed
+        else
+            flyBV.Velocity = Vector3.zero
+        end
+
+        BG.CFrame = camCF
+    end)
+end
+
+local function StopFly()
+    flyEnabled = false
+    -- flyConn se auto-desconecta no heartbeat acima
+end
+
+-- Ao definir velocidade, já começa a voar
+FlyBox.FocusLost:Connect(function()
+    local v = tonumber(FlyBox.Text)
+    if v then
+        v = math.clamp(v, 0, 9999)
+        FlyBox.Text = tostring(v)
+        if v == 0 then
+            flySpeed = 50
+            FlyBox.Text = ""
+            if flyEnabled then StopFly() end
+        else
+            flySpeed = v
+            if not flyEnabled then StartFly() end
+        end
+    else
+        FlyBox.Text = tostring(flySpeed)
+    end
+end)
+
+-- Clica na cápsula do Fly pra ligar/desligar (no label)
+local FlyCapFrame = FlyArrow.Parent
+local FlyToggle = Instance.new("TextButton")
+FlyToggle.Size                 = UDim2.new(1,-36,1,0)
+FlyToggle.BackgroundTransparency = 1
+FlyToggle.Text                 = ""
+FlyToggle.Parent               = FlyCapFrame
+
+-- usamos o arrow só pra dropdown; ativar voa ao clicar no próprio label
+-- na verdade: label já não é interativo, então usamos um botão extra
+FlyToggle.MouseButton1Click:Connect(function()
+    if flyEnabled then
+        StopFly()
+    else
+        StartFly()
+    end
+end)
+
+Player.CharacterAdded:Connect(function()
+    if flyEnabled then
+        task.wait(1)
+        StartFly()
+    end
+end)
+
+-- =====================
+-- RUBY SPEED
+-- =====================
+local _, SpeedArrow = MakeDropCap(PlrScroll, "Ruby Speed")
+local SpeedPanel, SpeedBox = MakeSpeedPanel(PlrScroll)
+
+local speedOpen = false
+
+SpeedArrow.MouseButton1Click:Connect(function()
+    speedOpen = not speedOpen
+    SpeedPanel.Visible = speedOpen
+    SpeedArrow.Text = speedOpen and "▲" or "▼"
+end)
+
+SpeedBox.FocusLost:Connect(function()
+    local v = tonumber(SpeedBox.Text)
+    if v then
+        v = math.clamp(v, 0, 5000)
+        local char = Player.Character
+        if char then
+            local hum = char:FindFirstChildOfClass("Humanoid")
+            if hum then
+                if v == 0 then
+                    hum.WalkSpeed = 16
+                    SpeedBox.Text = ""
+                else
+                    hum.WalkSpeed = v
+                    SpeedBox.Text = tostring(v)
+                end
+            end
+        else
+            SpeedBox.Text = v == 0 and "" or tostring(v)
+        end
+    else
+        SpeedBox.Text = ""
+    end
+end)
+
+Player.CharacterAdded:Connect(function(char)
+    local hum = char:WaitForChild("Humanoid", 10)
+    if hum then
+        local v = tonumber(SpeedBox.Text)
+        if v then hum.WalkSpeed = math.clamp(v, 1, 5000) end
+    end
+end)
+
+-- =====================
+-- RUBY WALL (Noclip)
+-- =====================
+local _, WallBtn, WallBtnSt = MakePowerCap(PlrScroll, "Ruby Wall")
+
+local wallEnabled = false
+local wallConn    = nil
+
+local function SetWall(state)
+    wallEnabled = state
+    if state then
+        WallBtn.Text = "ON"
+        TweenService:Create(WallBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(180,0,0)}):Play()
+        WallBtnSt.Color = Color3.fromRGB(255,60,60)
+
+        wallConn = RunService.Stepped:Connect(function()
+            if not wallEnabled then
+                wallConn:Disconnect()
+                wallConn = nil
+                return
+            end
+            local char = Player.Character
+            if not char then return end
+            for _, part in ipairs(char:GetDescendants()) do
+                if part:IsA("BasePart") and part.CanCollide then
+                    part.CanCollide = false
+                end
+            end
+            -- também desativa colisão em partes recém adicionadas (ex: ferramentas)
+            local hrp = char:FindFirstChild("HumanoidRootPart")
+            if hrp then hrp.CanCollide = false end
+        end)
+    else
+        WallBtn.Text = "OFF"
+        TweenService:Create(WallBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(30,30,30)}):Play()
+        WallBtnSt.Color = Color3.fromRGB(60,60,60)
+
+        if wallConn then
+                      wallConn:Disconnect()
+            wallConn = nil
+        end
+
+        local char = Player.Character
+        if char then
+            for _, part in ipairs(char:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = true
+                end
+            end
+        end
+    end
+end
+
+WallBtn.MouseButton1Click:Connect(function()
+    SetWall(not wallEnabled)
+end)
+
+-- =====================
+-- RUBY TELEPORT
+-- =====================
+local _, TpBtn, TpBtnSt = MakePowerCap(PlrScroll, "Ruby Teleport")
+
+local tpEnabled = false
+local tpConn    = nil
+
+local function SetTeleport(state)
+    tpEnabled = state
+    if state then
+        TpBtn.Text = "ON"
+        TweenService:Create(TpBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(180,0,0)}):Play()
+        TpBtnSt.Color = Color3.fromRGB(255,60,60)
+
+        tpConn = UIS.InputBegan:Connect(function(input, gp)
+            if gp then return end
+            if not tpEnabled then
+                tpConn:Disconnect()
+                tpConn = nil
+                return
+            end
+            if input.UserInputType == Enum.UserInputType.Touch
+            or input.UserInputType == Enum.UserInputType.MouseButton1 then
+                -- ignora cliques na própria GUI
+                local screenPos = input.Position
+                local unitRay   = workspace.CurrentCamera:ScreenPointToRay(screenPos.X, screenPos.Y)
+                local rayResult = workspace:Raycast(
+                    unitRay.Origin,
+                    unitRay.Direction * 1000,
+                    RaycastParams.new()
+                )
+                if rayResult then
+                    local char = Player.Character
+                    if char then
+                        local hrp = char:FindFirstChild("HumanoidRootPart")
+                        if hrp then
+                            hrp.CFrame = CFrame.new(rayResult.Position + Vector3.new(0,3,0))
+                        end
+                    end
+                end
+            end
+        end)
+    else
+        TpBtn.Text = "OFF"
+        TweenService:Create(TpBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(30,30,30)}):Play()
+        TpBtnSt.Color = Color3.fromRGB(60,60,60)
+        if tpConn then
+            tpConn:Disconnect()
+            tpConn = nil
+        end
+    end
+end
+
+TpBtn.MouseButton1Click:Connect(function()
+    SetTeleport(not tpEnabled)
+end)
+
+-- ============================================================
+-- RUBY SERVER PAGE
+-- ============================================================
+local ServerPage = CreatePage("Ruby Server")
+
+local ServerScroll = Instance.new("ScrollingFrame")
+ServerScroll.Size                = UDim2.new(1,0,1,0)
+ServerScroll.BackgroundTransparency = 1
+ServerScroll.BorderSizePixel     = 0
+ServerScroll.ScrollBarThickness  = 2
+ServerScroll.ScrollBarImageColor3= Color3.fromRGB(180,0,0)
+ServerScroll.CanvasSize          = UDim2.fromOffset(0,0)
+ServerScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+ServerScroll.Parent              = ServerPage
+
+local ServerLayout = Instance.new("UIListLayout")
+ServerLayout.Padding             = UDim.new(0,7)
+ServerLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+ServerLayout.Parent              = ServerScroll
+local ServerPad = Instance.new("UIPadding")
+ServerPad.PaddingTop    = UDim.new(0,10)
+ServerPad.PaddingBottom = UDim.new(0,8)
+ServerPad.Parent        = ServerScroll
+
+-- Função auxiliar: cápsula inteira clicável, sem botão lateral
+local function MakeServerCap(parent, labelText)
+    local cap = Instance.new("Frame")
+    cap.Size             = UDim2.new(1,-12,0,36)
+    cap.BackgroundColor3 = Color3.fromRGB(24,24,24)
+    cap.BorderSizePixel  = 0
+    cap.Parent           = parent
+    Instance.new("UICorner", cap).CornerRadius = UDim.new(0,10)
+    local st = Instance.new("UIStroke")
+    st.Transparency = 0.55
+    st.Thickness    = 1
+    st.Parent       = cap
+    table.insert(CapsuleStrokes, st)
+
+    local lbl = Instance.new("TextLabel")
+    lbl.BackgroundTransparency = 1
+    lbl.Size             = UDim2.new(1,0,1,0)
+    lbl.Position         = UDim2.new(0,12,0,0)
+    lbl.Text             = labelText
+    lbl.TextXAlignment   = Enum.TextXAlignment.Left
+    lbl.Font             = Enum.Font.GothamBold
+    lbl.TextSize         = 10
+    lbl.TextColor3       = Color3.new(1,1,1)
+    lbl.Parent           = cap
+
+    -- botão invisível cobrindo toda a cápsula
+    local btn = Instance.new("TextButton")
+    btn.Size                 = UDim2.new(1,0,1,0)
+    btn.BackgroundTransparency = 1
+    btn.Text                 = ""
+    btn.Parent               = cap
+
+    return cap, btn, st
+end
+
+-- ---- SERVER HOP ----
+local HopCap, HopBtn, HopSt = MakeServerCap(ServerScroll, "Ruby Server Hop")
+
+HopBtn.MouseButton1Click:Connect(function()
+    local TeleportService = game:GetService("TeleportService")
+    local placeId = game.PlaceId
+    local success = pcall(function()
+        TeleportService:TeleportToNewServer(placeId)
+    end)
+    if not success then
+        pcall(function()
+            TeleportService:Teleport(placeId, Player)
+        end)
+    end
+end)
+
+-- ---- SERVER EXIT ----
+local ExitCap, ExitBtn, ExitSt = MakeServerCap(ServerScroll, "Ruby Server Exit")
+
+ExitBtn.MouseButton1Click:Connect(function()
+    Player:Kick()
+end)
+
+-- ---- SERVER DEATH ----
+local DeathCap, DeathBtn, DeathSt = MakeServerCap(ServerScroll, "Ruby Server Death")
+
+DeathBtn.MouseButton1Click:Connect(function()
+    local char = Player.Character
+    if char then
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if hum then
+            hum.Health = 0
+        end
+    end
+
+end)
+
+-- ============================================================
+-- RUBY AIM PAGE
+-- ============================================================
+local AimPage = CreatePage("Ruby Aim")
+
+local AimScroll = Instance.new("ScrollingFrame")
+AimScroll.Size                = UDim2.new(1,0,1,0)
+AimScroll.BackgroundTransparency = 1
+AimScroll.BorderSizePixel     = 0
+AimScroll.ScrollBarThickness  = 2
+AimScroll.ScrollBarImageColor3= Color3.fromRGB(180,0,0)
+AimScroll.CanvasSize          = UDim2.fromOffset(0,0)
+AimScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+AimScroll.Parent              = AimPage
+
+local AimLayout = Instance.new("UIListLayout")
+AimLayout.Padding             = UDim.new(0,7)
+AimLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+AimLayout.Parent              = AimScroll
+local AimPad = Instance.new("UIPadding")
+AimPad.PaddingTop    = UDim.new(0,10)
+AimPad.PaddingBottom = UDim.new(0,8)
+AimPad.Parent        = AimScroll
+
+-- Estado global do Aim
+local AimIgnoredTeams   = {}
+local AimIgnoredPlayers = {}
+local aimCircle         = nil
+local aimCircleSize     = 150  -- tamanho padrão (0-100 mapeado para pixels)
+local rubyAimMode       = nil  -- "central", "touch", "follow"
+local aimConn           = nil
+local aimBulletConn     = nil
+
+-- Círculo de mira via GUI (compatível com Delta e qualquer executor)
+local AimCircleGui = Instance.new("Frame")
+AimCircleGui.Name                   = "RubyAimCircle"
+AimCircleGui.BackgroundTransparency = 1
+AimCircleGui.BorderSizePixel        = 0
+AimCircleGui.ZIndex                 = 10
+AimCircleGui.Visible                = false
+AimCircleGui.AnchorPoint            = Vector2.new(0.5, 0.5)
+AimCircleGui.Parent                 = ScreenGui
+Instance.new("UICorner", AimCircleGui).CornerRadius = UDim.new(1, 0)
+local AimCircleStroke = Instance.new("UIStroke")
+AimCircleStroke.Thickness       = 2.5
+AimCircleStroke.Transparency    = 0
+AimCircleStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+AimCircleStroke.Parent          = AimCircleGui
+
+-- Helpers: movem e mostram/escondem o círculo GUI
+local function SetCirclePos(vec2)
+    local d = aimCircleSize * 2
+    AimCircleGui.Size     = UDim2.fromOffset(d, d)
+    AimCircleGui.Position = UDim2.fromOffset(vec2.X, vec2.Y)
+end
+local function SetCircleVisible(v)
+    AimCircleGui.Visible = v
+end
+
+-- Substitui o Drawing: apenas marca aimCircle como ativo (flag booleana)
+local function CreateAimCircle()
+    local vp = workspace.CurrentCamera.ViewportSize
+    SetCirclePos(Vector2.new(vp.X / 2, vp.Y / 2))
+    SetCircleVisible(false)
+    aimCircle = true
+end
+
+-- Posição persistente do ponteiro (mouse/touch), atualizada por eventos dedicados
+local aimPointerPos = nil
+
+-- Captura posição do mouse/touch via InputChanged e InputBegan (compatível com Delta)
+UIS.InputChanged:Connect(function(inp)
+    if inp.UserInputType == Enum.UserInputType.MouseMovement
+    or inp.UserInputType == Enum.UserInputType.Touch then
+        aimPointerPos = Vector2.new(inp.Position.X, inp.Position.Y)
+    end
+end)
+UIS.InputBegan:Connect(function(inp, gpe)
+    if inp.UserInputType == Enum.UserInputType.Touch then
+        aimPointerPos = Vector2.new(inp.Position.X, inp.Position.Y)
+    end
+end)
+
+-- Atualiza cor RGB do círculo a cada frame
+RunService.Heartbeat:Connect(function()
+    if AimCircleGui.Visible then
+        AimCircleStroke.Color = getRGBColor(0)
+    end
+end)
+
+-- Retorna o inimigo mais próximo dentro do círculo
+local function GetNearestInCircle(circleCenter, radius)
+    local best, bestDist = nil, math.huge
+    local vp = workspace.CurrentCamera.ViewportSize
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= Player
+        and not AimIgnoredPlayers[plr.Name]
+        and not (plr.Team and AimIgnoredTeams[plr.Team.Name]) then
+            local char = plr.Character
+            if char then
+                local hrp = char:FindFirstChild("HumanoidRootPart")
+                local hum = char:FindFirstChildOfClass("Humanoid")
+                if hrp and hum and hum.Health > 0 then
+                    local screenPos, onScreen = workspace.CurrentCamera:WorldToViewportPoint(hrp.Position)
+                    if onScreen then
+                        local sp2 = Vector2.new(screenPos.X, screenPos.Y)
+                        local dist = (sp2 - circleCenter).Magnitude
+                        if dist <= radius and dist < bestDist then
+                            bestDist = dist
+                            best     = plr
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return best
+end
+
+-- Redireciona bala/projétil para o alvo
+local function RedirectToTarget(target)
+    if not target then return end
+    local char = target.Character
+    if not char then return end
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+    -- Identifica ferramenta equipada
+    local myChar = Player.Character
+    if not myChar then return end
+    local tool = myChar:FindFirstChildOfClass("Tool")
+    if not tool then return end
+    -- Detecta tipo de projétil: tenta Raycast (Handle com RaycastTool) ou outros
+    local handle = tool:FindFirstChild("Handle")
+    -- Abordagem: força o CFrame do HRP local a mirar no alvo (aimbot angular)
+    if myChar:FindFirstChild("HumanoidRootPart") then
+        local myHRP    = myChar.HumanoidRootPart
+        local targetPos = hrp.Position
+        local lookAt    = CFrame.lookAt(myHRP.Position, targetPos)
+        myHRP.CFrame    = lookAt
+    end
+end
+
+-- =====================
+-- RUBY AIM GAME (dropdown com 3 modos)
+-- =====================
+local AimGameCap = Instance.new("Frame")
+AimGameCap.Size             = UDim2.new(1,-12,0,32)
+AimGameCap.BackgroundColor3 = Color3.fromRGB(24,24,24)
+AimGameCap.BorderSizePixel  = 0
+AimGameCap.Parent           = AimScroll
+Instance.new("UICorner", AimGameCap).CornerRadius = UDim.new(0,10)
+local AimGameSt = Instance.new("UIStroke")
+AimGameSt.Transparency = 0.55
+AimGameSt.Thickness    = 1
+AimGameSt.Parent       = AimGameCap
+table.insert(CapsuleStrokes, AimGameSt)
+
+local AimGameLabel = Instance.new("TextLabel")
+AimGameLabel.BackgroundTransparency = 1
+AimGameLabel.Size           = UDim2.new(1,-40,1,0)
+AimGameLabel.Position       = UDim2.new(0,12,0,0)
+AimGameLabel.Text           = "Ruby Aim Game"
+AimGameLabel.TextXAlignment = Enum.TextXAlignment.Left
+AimGameLabel.Font           = Enum.Font.GothamBold
+AimGameLabel.TextSize       = 10
+AimGameLabel.TextColor3     = Color3.new(1,1,1)
+AimGameLabel.Parent         = AimGameCap
+
+local AimGameArrow = Instance.new("TextButton")
+AimGameArrow.Size             = UDim2.fromOffset(24,24)
+AimGameArrow.Position         = UDim2.new(1,-30,0.5,-12)
+AimGameArrow.Text             = "▼"
+AimGameArrow.Font             = Enum.Font.GothamBold
+AimGameArrow.TextSize         = 11
+AimGameArrow.TextColor3       = Color3.new(1,1,1)
+AimGameArrow.BackgroundColor3 = Color3.fromRGB(35,35,35)
+AimGameArrow.BorderSizePixel  = 0
+AimGameArrow.Parent           = AimGameCap
+Instance.new("UICorner", AimGameArrow).CornerRadius = UDim.new(0,6)
+
+local AimGameDropdown = Instance.new("Frame")
+AimGameDropdown.Size             = UDim2.new(1,-12,0,0)
+AimGameDropdown.BackgroundColor3 = Color3.fromRGB(20,20,20)
+AimGameDropdown.BorderSizePixel  = 0
+AimGameDropdown.Visible          = false
+AimGameDropdown.ClipsDescendants = true
+AimGameDropdown.Parent           = AimScroll
+Instance.new("UICorner", AimGameDropdown).CornerRadius = UDim.new(0,8)
+local AGDSt = Instance.new("UIStroke")
+AGDSt.Transparency = 0.7
+AGDSt.Thickness    = 1
+AGDSt.Parent       = AimGameDropdown
+table.insert(CapsuleStrokes, AGDSt)
+
+local AGDLayout = Instance.new("UIListLayout")
+AGDLayout.Padding             = UDim.new(0,4)
+AGDLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+AGDLayout.Parent              = AimGameDropdown
+local AGDPad = Instance.new("UIPadding")
+AGDPad.PaddingTop    = UDim.new(0,6)
+AGDPad.PaddingBottom = UDim.new(0,6)
+AGDPad.Parent        = AimGameDropdown
+
+local aimGameOpen   = false
+local aimModeRows   = {}
+local aimModeNames  = {"Ruby Central", "Ruby Follow", "Ruby Touch"}
+
+local function SetAimMode(modeName)
+    -- Desativa modo anterior
+    if aimConn then aimConn:Disconnect() aimConn = nil end
+    SetCircleVisible(false)
+
+    if rubyAimMode == modeName then
+        -- Clicou no ativo: desliga
+        rubyAimMode = nil
+        aimCircle = nil
+        for _, r in pairs(aimModeRows) do
+            r.dot.BackgroundColor3 = Color3.fromRGB(40,40,40)
+        end
+        return
+    end
+
+    rubyAimMode = modeName
+    for name, r in pairs(aimModeRows) do
+        r.dot.BackgroundColor3 = (name == modeName)
+            and Color3.fromRGB(180,0,0)
+            or  Color3.fromRGB(40,40,40)
+    end
+
+    CreateAimCircle()
+    local vp = workspace.CurrentCamera.ViewportSize
+    local cx  = vp.X / 2
+    local cy  = vp.Y / 2
+
+    if modeName == "Ruby Central" then
+        -- Círculo fixo no centro (apenas visual, não rotaciona o personagem)
+        SetCirclePos(Vector2.new(cx, cy))
+        SetCircleVisible(true)
+        aimConn = RunService.Heartbeat:Connect(function()
+            -- Ruby Central: só mantém o círculo visível no centro, sem aimbot
+        end)
+
+    elseif modeName == "Ruby Follow" then
+        -- Círculo no centro; câmera segue o jogador mais próximo dentro do raio
+        SetCirclePos(Vector2.new(cx, cy))
+        SetCircleVisible(true)
+        aimConn = RunService.Heartbeat:Connect(function()
+            local center = Vector2.new(cx, cy)
+            local target = GetNearestInCircle(center, aimCircleSize)
+            if target then
+                local char = target.Character
+                if char then
+                    local hrp = char:FindFirstChild("HumanoidRootPart")
+                    if hrp then
+                        workspace.CurrentCamera.CFrame = CFrame.lookAt(
+                            workspace.CurrentCamera.CFrame.Position,
+                            hrp.Position
+                        )
+                    end
+                end
+            end
+        end)
+
+    elseif modeName == "Ruby Touch" then
+        -- Círculo segue o dedo (touch) ou cursor (mouse) via listener persistente
+        -- Inicializa com posição atual do mouse caso ainda não haja evento touch
+        if not aimPointerPos then
+            local mp = UIS:GetMouseLocation()
+            aimPointerPos = Vector2.new(mp.X, mp.Y)
+        end
+        SetCirclePos(aimPointerPos)
+        SetCircleVisible(true)
+        aimConn = RunService.Heartbeat:Connect(function()
+            local curPos = aimPointerPos or Vector2.new(cx, cy)
+            SetCirclePos(curPos)
+            local target = GetNearestInCircle(curPos, aimCircleSize)
+            if target then RedirectToTarget(target) end
+        end)
+    end
+end
+
+-- Popula os itens do dropdown Aim Game
+local function BuildAimModeRows()
+    for _, v in ipairs(AimGameDropdown:GetChildren()) do
+        if v:IsA("Frame") then v:Destroy() end
+    end
+    aimModeRows = {}
+
+    for _, modeName in ipairs(aimModeNames) do
+        local row = Instance.new("Frame")
+        row.Size             = UDim2.new(1,-10,0,28)
+        row.BackgroundColor3 = Color3.fromRGB(30,30,30)
+        row.BorderSizePixel  = 0
+        row.Parent           = AimGameDropdown
+        Instance.new("UICorner", row).CornerRadius = UDim.new(0,7)
+
+        local lbl = Instance.new("TextLabel")
+        lbl.BackgroundTransparency = 1
+        lbl.Size           = UDim2.new(1,-36,1,0)
+        lbl.Position       = UDim2.new(0,10,0,0)
+        lbl.Text           = modeName
+        lbl.Font           = Enum.Font.Gotham
+        lbl.TextSize       = 10
+        lbl.TextColor3     = Color3.new(1,1,1)
+        lbl.TextXAlignment = Enum.TextXAlignment.Left
+        lbl.Parent         = row
+
+        local dot = Instance.new("Frame")
+        dot.Size             = UDim2.fromOffset(10,10)
+        dot.Position         = UDim2.new(1,-20,0.5,-5)
+        dot.BackgroundColor3 = (rubyAimMode == modeName)
+            and Color3.fromRGB(180,0,0) or Color3.fromRGB(40,40,40)
+        dot.BorderSizePixel  = 0
+        dot.Parent           = row
+        Instance.new("UICorner", dot).CornerRadius = UDim.new(1,0)
+
+        local btn = Instance.new("TextButton")
+        btn.Size                 = UDim2.new(1,0,1,0)
+        btn.BackgroundTransparency = 1
+        btn.Text                 = ""
+        btn.Parent               = row
+
+        aimModeRows[modeName] = {row=row, dot=dot}
+
+        btn.MouseButton1Click:Connect(function()
+            SetAimMode(modeName)
+        end)
+    end
+
+    local count = #aimModeNames
+    AimGameDropdown.Size = UDim2.new(1,-12,0, count*(28+4)+12)
+end
+
+AimGameArrow.MouseButton1Click:Connect(function()
+    aimGameOpen = not aimGameOpen
+    if aimGameOpen then
+        BuildAimModeRows()
+        AimGameDropdown.Visible = true
+        AimGameArrow.Text = "▲"
+    else
+        AimGameDropdown.Visible = false
+        AimGameArrow.Text = "▼"
+    end
+end)
+
+-- =====================
+-- RUBY AIM SIZE (slider 0-100)
+-- =====================
+local AimSizeCap = Instance.new("Frame")
+AimSizeCap.Size             = UDim2.new(1,-12,0,32)
+AimSizeCap.BackgroundColor3 = Color3.fromRGB(24,24,24)
+AimSizeCap.BorderSizePixel  = 0
+AimSizeCap.Parent           = AimScroll
+Instance.new("UICorner", AimSizeCap).CornerRadius = UDim.new(0,10)
+local AimSizeSt = Instance.new("UIStroke")
+AimSizeSt.Transparency = 0.55
+AimSizeSt.Thickness    = 1
+AimSizeSt.Parent       = AimSizeCap
+table.insert(CapsuleStrokes, AimSizeSt)
+
+local AimSizeLabel = Instance.new("TextLabel")
+AimSizeLabel.BackgroundTransparency = 1
+AimSizeLabel.Size           = UDim2.new(1,-40,1,0)
+AimSizeLabel.Position       = UDim2.new(0,12,0,0)
+AimSizeLabel.Text           = "Ruby Aim Size"
+AimSizeLabel.TextXAlignment = Enum.TextXAlignment.Left
+AimSizeLabel.Font           = Enum.Font.GothamBold
+AimSizeLabel.TextSize       = 10
+AimSizeLabel.TextColor3     = Color3.new(1,1,1)
+AimSizeLabel.Parent         = AimSizeCap
+
+local AimSizeArrow = Instance.new("TextButton")
+AimSizeArrow.Size             = UDim2.fromOffset(24,24)
+AimSizeArrow.Position         = UDim2.new(1,-30,0.5,-12)
+AimSizeArrow.Text             = "▼"
+AimSizeArrow.Font             = Enum.Font.GothamBold
+AimSizeArrow.TextSize         = 11
+AimSizeArrow.TextColor3       = Color3.new(1,1,1)
+AimSizeArrow.BackgroundColor3 = Color3.fromRGB(35,35,35)
+AimSizeArrow.BorderSizePixel  = 0
+AimSizeArrow.Parent           = AimSizeCap
+Instance.new("UICorner", AimSizeArrow).CornerRadius = UDim.new(0,6)
+
+local AimSizeDropdown = Instance.new("Frame")
+AimSizeDropdown.Size             = UDim2.new(1,-12,0,0)
+AimSizeDropdown.BackgroundColor3 = Color3.fromRGB(20,20,20)
+AimSizeDropdown.BorderSizePixel  = 0
+AimSizeDropdown.Visible          = false
+AimSizeDropdown.ClipsDescendants = true
+AimSizeDropdown.Parent           = AimScroll
+Instance.new("UICorner", AimSizeDropdown).CornerRadius = UDim.new(0,8)
+local ASDSt = Instance.new("UIStroke")
+ASDSt.Transparency = 0.7
+ASDSt.Thickness    = 1
+ASDSt.Parent       = AimSizeDropdown
+table.insert(CapsuleStrokes, ASDSt)
+
+local AimSizePad = Instance.new("UIPadding")
+AimSizePad.PaddingLeft   = UDim.new(0,10)
+AimSizePad.PaddingRight  = UDim.new(0,10)
+AimSizePad.PaddingTop    = UDim.new(0,10)
+AimSizePad.PaddingBottom = UDim.new(0,10)
+AimSizePad.Parent        = AimSizeDropdown
+
+-- Valor numérico exibido
+local AimSizeValLabel = Instance.new("TextLabel")
+AimSizeValLabel.BackgroundTransparency = 1
+AimSizeValLabel.Size      = UDim2.new(1,0,0,16)
+AimSizeValLabel.Text      = "50"
+AimSizeValLabel.Font      = Enum.Font.GothamBold
+AimSizeValLabel.TextSize  = 10
+AimSizeValLabel.TextColor3= Color3.new(1,1,1)
+AimSizeValLabel.Parent    = AimSizeDropdown
+
+-- Track do slider
+local AimSliderTrack = Instance.new("Frame")
+AimSliderTrack.Size             = UDim2.new(1,0,0,6)
+AimSliderTrack.Position         = UDim2.new(0,0,0,26)
+AimSliderTrack.BackgroundColor3 = Color3.fromRGB(35,35,35)
+AimSliderTrack.BorderSizePixel  = 0
+AimSliderTrack.Parent           = AimSizeDropdown
+Instance.new("UICorner", AimSliderTrack).CornerRadius = UDim.new(1,0)
+
+local AimSliderFill = Instance.new("Frame")
+AimSliderFill.Size             = UDim2.new(0.5,0,1,0)
+AimSliderFill.BackgroundColor3 = Color3.fromRGB(180,0,0)
+AimSliderFill.BorderSizePixel  = 0
+AimSliderFill.Parent           = AimSliderTrack
+Instance.new("UICorner", AimSliderFill).CornerRadius = UDim.new(1,0)
+
+local AimSliderHandle = Instance.new("Frame")
+AimSliderHandle.Size             = UDim2.fromOffset(14,14)
+AimSliderHandle.AnchorPoint      = Vector2.new(0.5,0.5)
+AimSliderHandle.Position         = UDim2.new(0.5,0,0.5,0)
+AimSliderHandle.BackgroundColor3 = Color3.new(1,1,1)
+AimSliderHandle.BorderSizePixel  = 0
+AimSliderHandle.Parent           = AimSliderTrack
+Instance.new("UICorner", AimSliderHandle).CornerRadius = UDim.new(1,0)
+
+AimSizeDropdown.Size = UDim2.new(1,-12,0,50)
+
+-- Valor inicial: 50 (meio)
+local aimSizeValue = 50
+local sliderDragging = false
+
+local function UpdateSlider(pct)
+    pct = math.clamp(pct, 0, 1)
+    aimSizeValue = math.floor(pct * 100)
+    AimSizeValLabel.Text  = tostring(aimSizeValue)
+    AimSliderFill.Size    = UDim2.new(pct, 0, 1, 0)
+    AimSliderHandle.Position = UDim2.new(pct, 0, 0.5, 0)
+    -- Mapeia 0-100 para 10-tamanho da tela inteira
+    local vp = workspace.CurrentCamera.ViewportSize
+    local maxR = math.min(vp.X, vp.Y) / 2
+    aimCircleSize = math.max(10, math.floor(pct * maxR))
+    if aimCircle then
+        local d = aimCircleSize * 2
+        AimCircleGui.Size = UDim2.fromOffset(d, d)
+    end
+end
+
+UpdateSlider(0.5)
+
+local function GetSliderPct(inputPos)
+    local trackPos  = AimSliderTrack.AbsolutePosition
+    local trackSize = AimSliderTrack.AbsoluteSize
+    return (inputPos.X - trackPos.X) / trackSize.X
+end
+
+AimSliderTrack.InputBegan:Connect(function(inp)
+    if inp.UserInputType == Enum.UserInputType.Touch
+    or inp.UserInputType == Enum.UserInputType.MouseButton1 then
+        sliderDragging = true
+        UpdateSlider(GetSliderPct(inp.Position))
+    end
+end)
+
+UIS.InputChanged:Connect(function(inp)
+    if sliderDragging and (
+        inp.UserInputType == Enum.UserInputType.Touch
+     or inp.UserInputType == Enum.UserInputType.MouseMovement
+    ) then
+        UpdateSlider(GetSliderPct(inp.Position))
+    end
+end)
+
+UIS.InputEnded:Connect(function(inp)
+    if inp.UserInputType == Enum.UserInputType.Touch
+    or inp.UserInputType == Enum.UserInputType.MouseButton1 then
+        sliderDragging = false
+    end
+end)
+
+local aimSizeOpen = false
+AimSizeArrow.MouseButton1Click:Connect(function()
+    aimSizeOpen = not aimSizeOpen
+    AimSizeDropdown.Visible = aimSizeOpen
+    AimSizeArrow.Text = aimSizeOpen and "▲" or "▼"
+end)
+
+-- Anima o handle com RGB
+RunService.Heartbeat:Connect(function()
+    AimSliderHandle.BackgroundColor3 = getRGBColor(1.5)
+    AimSliderFill.BackgroundColor3   = getRGBColor(0.5)
+end)
+
+-- =====================
+-- RUBY AIM TEAM (times ignorados)
+-- =====================
+local AimTeamCap = Instance.new("Frame")
+AimTeamCap.Size             = UDim2.new(1,-12,0,32)
+AimTeamCap.BackgroundColor3 = Color3.fromRGB(24,24,24)
+AimTeamCap.BorderSizePixel  = 0
+AimTeamCap.Parent           = AimScroll
+Instance.new("UICorner", AimTeamCap).CornerRadius = UDim.new(0,10)
+local AimTeamSt = Instance.new("UIStroke")
+AimTeamSt.Transparency = 0.55
+AimTeamSt.Thickness    = 1
+AimTeamSt.Parent       = AimTeamCap
+table.insert(CapsuleStrokes, AimTeamSt)
+
+local AimTeamLabel = Instance.new("TextLabel")
+AimTeamLabel.BackgroundTransparency = 1
+AimTeamLabel.Size           = UDim2.new(1,-40,1,0)
+AimTeamLabel.Position       = UDim2.new(0,12,0,0)
+AimTeamLabel.Text           = "Ruby Aim Team"
+AimTeamLabel.TextXAlignment = Enum.TextXAlignment.Left
+AimTeamLabel.Font           = Enum.Font.GothamBold
+AimTeamLabel.TextSize       = 10
+AimTeamLabel.TextColor3     = Color3.new(1,1,1)
+AimTeamLabel.Parent         = AimTeamCap
+
+local AimTeamArrow = Instance.new("TextButton")
+AimTeamArrow.Size             = UDim2.fromOffset(24,24)
+AimTeamArrow.Position         = UDim2.new(1,-30,0.5,-12)
+AimTeamArrow.Text             = "▼"
+AimTeamArrow.Font             = Enum.Font.GothamBold
+AimTeamArrow.TextSize         = 11
+AimTeamArrow.TextColor3       = Color3.new(1,1,1)
+AimTeamArrow.BackgroundColor3 = Color3.fromRGB(35,35,35)
+AimTeamArrow.BorderSizePixel  = 0
+AimTeamArrow.Parent           = AimTeamCap
+Instance.new("UICorner", AimTeamArrow).CornerRadius = UDim.new(0,6)
+
+local AimTeamDropdown = Instance.new("Frame")
+AimTeamDropdown.Size             = UDim2.new(1,-12,0,0)
+AimTeamDropdown.BackgroundColor3 = Color3.fromRGB(20,20,20)
+AimTeamDropdown.BorderSizePixel  = 0
+AimTeamDropdown.Visible          = false
+AimTeamDropdown.ClipsDescendants = true
+AimTeamDropdown.Parent           = AimScroll
+Instance.new("UICorner", AimTeamDropdown).CornerRadius = UDim.new(0,8)
+local ATDSt = Instance.new("UIStroke")
+ATDSt.Transparency = 0.7
+ATDSt.Thickness    = 1
+ATDSt.Parent       = AimTeamDropdown
+table.insert(CapsuleStrokes, ATDSt)
+
+local AimTeamDropLayout = Instance.new("UIListLayout")
+AimTeamDropLayout.Padding             = UDim.new(0,4)
+AimTeamDropLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+AimTeamDropLayout.Parent              = AimTeamDropdown
+local ATDPad = Instance.new("UIPadding")
+ATDPad.PaddingTop    = UDim.new(0,6)
+ATDPad.PaddingBottom = UDim.new(0,6)
+ATDPad.Parent        = AimTeamDropdown
+
+local aimTeamDropOpen = false
+local aimTeamItems    = {}
+
+local function PopulateAimTeams()
+    for _, v in ipairs(AimTeamDropdown:GetChildren()) do
+        if v:IsA("Frame") then v:Destroy() end
+    end
+    aimTeamItems = {}
+
+    local teamNames = {}
+    local ok, svc = pcall(function() return game:GetService("Teams") end)
+    if ok and svc then
+        for _, t in ipairs(svc:GetTeams()) do
+            table.insert(teamNames, t.Name)
+        end
+    end
+    if #teamNames == 0 then
+        for _, plr in ipairs(Players:GetPlayers()) do
+            if plr.Team then
+                local dup = false
+                for _, n in ipairs(teamNames) do if n == plr.Team.Name then dup=true break end end
+                if not dup then table.insert(teamNames, plr.Team.Name) end
+            end
+        end
+    end
+    if #teamNames == 0 then table.insert(teamNames, "Sem times detectados") end
+
+    for _, tn in ipairs(teamNames) do
+        local row = Instance.new("Frame")
+        row.Size             = UDim2.new(1,-10,0,28)
+        row.BackgroundColor3 = Color3.fromRGB(30,30,30)
+        row.BorderSizePixel  = 0
+        row.Parent           = AimTeamDropdown
+        Instance.new("UICorner", row).CornerRadius = UDim.new(0,7)
+
+        local rl = Instance.new("TextLabel")
+        rl.BackgroundTransparency = 1
+        rl.Size           = UDim2.new(1,-36,1,0)
+        rl.Position       = UDim2.new(0,10,0,0)
+        rl.Text           = tn
+        rl.Font           = Enum.Font.Gotham
+        rl.TextSize       = 10
+        rl.TextColor3     = Color3.new(1,1,1)
+        rl.TextXAlignment = Enum.TextXAlignment.Left
+        rl.Parent         = row
+
+        local dot = Instance.new("Frame")
+        dot.Size             = UDim2.fromOffset(10,10)
+        dot.Position         = UDim2.new(1,-20,0.5,-5)
+        dot.BackgroundColor3 = AimIgnoredTeams[tn] and Color3.fromRGB(180,0,0) or Color3.fromRGB(40,40,40)
+        dot.BorderSizePixel  = 0
+        dot.Parent           = row
+        Instance.new("UICorner", dot).CornerRadius = UDim.new(1,0)
+
+        local btn = Instance.new("TextButton")
+        btn.Size                 = UDim2.new(1,0,1,0)
+        btn.BackgroundTransparency = 1
+        btn.Text                 = ""
+        btn.Parent               = row
+
+        aimTeamItems[tn] = {row=row, dot=dot}
+
+        btn.MouseButton1Click:Connect(function()
+            if AimIgnoredTeams[tn] then
+                AimIgnoredTeams[tn] = nil
+                dot.BackgroundColor3 = Color3.fromRGB(40,40,40)
+            else
+                AimIgnoredTeams[tn] = true
+                dot.BackgroundColor3 = Color3.fromRGB(180,0,0)
+            end
+        end)
+    end
+
+    local count = math.max(#teamNames, 1)
+    AimTeamDropdown.Size = UDim2.new(1,-12,0, count*(28+4)+12)
+end
+
+AimTeamArrow.MouseButton1Click:Connect(function()
+    aimTeamDropOpen = not aimTeamDropOpen
+    if aimTeamDropOpen then
+        PopulateAimTeams()
+        AimTeamDropdown.Visible = true
+        AimTeamArrow.Text = "▲"
+    else
+        AimTeamDropdown.Visible = false
+        AimTeamArrow.Text = "▼"
+    end
+end)
+
+-- =====================
+-- RUBY AIM PLAYERS (jogadores ignorados)
+-- =====================
+local AimPlrCap = Instance.new("Frame")
+AimPlrCap.Size             = UDim2.new(1,-12,0,32)
+AimPlrCap.BackgroundColor3 = Color3.fromRGB(24,24,24)
+AimPlrCap.BorderSizePixel  = 0
+AimPlrCap.Parent           = AimScroll
+Instance.new("UICorner", AimPlrCap).CornerRadius = UDim.new(0,10)
+local AimPlrCapSt = Instance.new("UIStroke")
+AimPlrCapSt.Transparency = 0.55
+AimPlrCapSt.Thickness    = 1
+AimPlrCapSt.Parent       = AimPlrCap
+table.insert(CapsuleStrokes, AimPlrCapSt)
+
+local AimPlrLabel = Instance.new("TextLabel")
+AimPlrLabel.BackgroundTransparency = 1
+AimPlrLabel.Size           = UDim2.new(1,-40,1,0)
+AimPlrLabel.Position       = UDim2.new(0,12,0,0)
+AimPlrLabel.Text           = "Ruby Aim Players"
+AimPlrLabel.TextXAlignment = Enum.TextXAlignment.Left
+AimPlrLabel.Font           = Enum.Font.GothamBold
+AimPlrLabel.TextSize       = 10
+AimPlrLabel.TextColor3     = Color3.new(1,1,1)
+AimPlrLabel.Parent         = AimPlrCap
+
+local AimPlrArrow = Instance.new("TextButton")
+AimPlrArrow.Size             = UDim2.fromOffset(24,24)
+AimPlrArrow.Position         = UDim2.new(1,-30,0.5,-12)
+AimPlrArrow.Text             = "▼"
+AimPlrArrow.Font             = Enum.Font.GothamBold
+AimPlrArrow.TextSize         = 11
+AimPlrArrow.TextColor3       = Color3.new(1,1,1)
+AimPlrArrow.BackgroundColor3 = Color3.fromRGB(35,35,35)
+AimPlrArrow.BorderSizePixel  = 0
+AimPlrArrow.Parent           = AimPlrCap
+Instance.new("UICorner", AimPlrArrow).CornerRadius = UDim.new(0,6)
+
+local AimPlrDropdown = Instance.new("Frame")
+AimPlrDropdown.Size             = UDim2.new(1,-12,0,0)
+AimPlrDropdown.BackgroundColor3 = Color3.fromRGB(20,20,20)
+AimPlrDropdown.BorderSizePixel  = 0
+AimPlrDropdown.Visible          = false
+AimPlrDropdown.ClipsDescendants = true
+AimPlrDropdown.Parent           = AimScroll
+Instance.new("UICorner", AimPlrDropdown).CornerRadius = UDim.new(0,8)
+local APDSt = Instance.new("UIStroke")
+APDSt.Transparency = 0.7
+APDSt.Thickness    = 1
+APDSt.Parent       = AimPlrDropdown
+table.insert(CapsuleStrokes, APDSt)
+
+local AimPlrInner = Instance.new("Frame")
+AimPlrInner.Size                 = UDim2.new(1,0,1,0)
+AimPlrInner.BackgroundTransparency = 1
+AimPlrInner.Parent               = AimPlrDropdown
+
+local AimPlrDropLayout = Instance.new("UIListLayout")
+AimPlrDropLayout.Padding             = UDim.new(0,4)
+AimPlrDropLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+AimPlrDropLayout.SortOrder           = Enum.SortOrder.LayoutOrder
+AimPlrDropLayout.Parent              = AimPlrInner
+local APIPad = Instance.new("UIPadding")
+APIPad.PaddingTop    = UDim.new(0,6)
+APIPad.PaddingBottom = UDim.new(0,6)
+APIPad.Parent        = AimPlrInner
+
+local AimSearchBox = Instance.new("TextBox")
+AimSearchBox.Size               = UDim2.new(1,-10,0,26)
+AimSearchBox.BackgroundColor3   = Color3.fromRGB(30,30,30)
+AimSearchBox.BorderSizePixel    = 0
+AimSearchBox.PlaceholderText    = "Selecione Jogadores..."
+AimSearchBox.PlaceholderColor3  = Color3.fromRGB(120,120,120)
+AimSearchBox.Text               = ""
+AimSearchBox.Font               = Enum.Font.Gotham
+AimSearchBox.TextSize           = 10
+AimSearchBox.TextColor3         = Color3.new(1,1,1)
+AimSearchBox.ClearTextOnFocus   = false
+AimSearchBox.LayoutOrder        = 0
+AimSearchBox.Parent             = AimPlrInner
+Instance.new("UICorner", AimSearchBox).CornerRadius = UDim.new(0,7)
+local ASBPad = Instance.new("UIPadding")
+ASBPad.PaddingLeft = UDim.new(0,8)
+ASBPad.Parent      = AimSearchBox
+
+local aimPlrDropOpen  = false
+local aimPlrRowFrames = {}
+
+local function BuildAimPlayerRows(filter)
+    for _, v in ipairs(AimPlrInner:GetChildren()) do
+        if v:IsA("Frame") then v:Destroy() end
+    end
+    aimPlrRowFrames = {}
+
+    local count = 0
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= Player then
+        local name = plr.Name
+        local showRow = true
+        if filter and filter ~= "" then
+            if not string.find(string.lower(name), string.lower(filter), 1, true) then
+                showRow = false
+            end
+        end
+        if showRow then
+        count = count + 1
+
+        local row = Instance.new("Frame")
+        row.Size             = UDim2.new(1,-10,0,28)
+        row.BackgroundColor3 = Color3.fromRGB(30,30,30)
+        row.BorderSizePixel  = 0
+        row.LayoutOrder      = count
+        row.Parent           = AimPlrInner
+        Instance.new("UICorner", row).CornerRadius = UDim.new(0,7)
+
+        local lbl = Instance.new("TextLabel")
+        lbl.BackgroundTransparency = 1
+        lbl.Size           = UDim2.new(1,-36,1,0)
+        lbl.Position       = UDim2.new(0,10,0,0)
+        lbl.Text           = name
+        lbl.Font           = Enum.Font.Gotham
+        lbl.TextSize       = 10
+        lbl.TextColor3     = Color3.new(1,1,1)
+        lbl.TextXAlignment = Enum.TextXAlignment.Left
+        lbl.Parent         = row
+
+        local dot = Instance.new("Frame")
+        dot.Size             = UDim2.fromOffset(10,10)
+        dot.Position         = UDim2.new(1,-20,0.5,-5)
+        dot.BackgroundColor3 = AimIgnoredPlayers[name] and Color3.fromRGB(180,0,0) or Color3.fromRGB(40,40,40)
+        dot.BorderSizePixel  = 0
+        dot.Parent           = row
+        Instance.new("UICorner", dot).CornerRadius = UDim.new(1,0)
+
+        local btn = Instance.new("TextButton")
+        btn.Size                 = UDim2.new(1,0,1,0)
+        btn.BackgroundTransparency = 1
+        btn.Text                 = ""
+        btn.Parent               = row
+
+        aimPlrRowFrames[name] = {row=row, dot=dot}
+
+        btn.MouseButton1Click:Connect(function()
+            if AimIgnoredPlayers[name] then
+                AimIgnoredPlayers[name] = nil
+                dot.BackgroundColor3 = Color3.fromRGB(40,40,40)
+            else
+                AimIgnoredPlayers[name] = true
+                dot.BackgroundColor3 = Color3.fromRGB(180,0,0)
+            end
+        end)
+        end -- if showRow
+        end -- if plr ~= Player
+    end
+
+    AimPlrDropdown.Size = UDim2.new(1,-12,0, math.max(count*(28+4)+40, 50))
+end
+
+AimSearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+    BuildAimPlayerRows(AimSearchBox.Text)
+end)
+
+AimPlrArrow.MouseButton1Click:Connect(function()
+    aimPlrDropOpen = not aimPlrDropOpen
+    if aimPlrDropOpen then
+        AimPlrDropdown.Visible = true
+        AimPlrArrow.Text = "▲"
+        BuildAimPlayerRows("")
+    else
+        AimPlrDropdown.Visible = false
+        AimPlrArrow.Text = "▼"
+    end
+end)
+
+Players.PlayerRemoving:Connect(function(plr)
+    if aimPlrRowFrames[plr.Name] then
+        aimPlrRowFrames[plr.Name].row:Destroy()
+        aimPlrRowFrames[plr.Name] = nil
+    end
+end)
+
+-- ============================================================
+-- TABS / SIDEBAR
+-- ============================================================
+local Tabs = {"Ruby Aim","Ruby Esp","Ruby Player","Ruby Server","Creditos"}
+local HoveredBtns = {}
+
+for _, TabName in ipairs(Tabs) do
+    local Btn = Instance.new("TextButton")
+    Btn.Size             = UDim2.fromOffset(75,24)
+    Btn.BackgroundColor3 = Color3.fromRGB(24,24,24)
+    Btn.Text             = TabName
+    Btn.TextColor3       = Color3.new(1,1,1)
+    Btn.Font             = Enum.Font.GothamMedium
+    Btn.TextSize         = 10
+    Btn.BorderSizePixel  = 0
+    Btn.Parent           = Sidebar
+    Instance.new("UICorner", Btn).CornerRadius = UDim.new(0,8)
+
+    Btn.MouseEnter:Connect(function() HoveredBtns[Btn] = true end)
+    Btn.MouseLeave:Connect(function()
+        HoveredBtns[Btn] = nil
+        TweenService:Create(Btn, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(24,24,24)}):Play()
+    end)
+    Btn.MouseButton1Click:Connect(function()
+        for _, Page in pairs(Pages) do Page.Visible = false end
+        if Pages[TabName] then Pages[TabName].Visible = true else Home.Visible = true end
+    end)
+end
+
+-- ============================================================
+-- LOOP PRINCIPAL (RGB + ESP)
+-- ============================================================
+RunService.Heartbeat:Connect(function()
+    local col = getRGBColor(0)
+
+    Stroke.Color             = col
+    Dot.BackgroundColor3     = col
+    MaxBtn.BackgroundColor3  = col
+
+    for i, cs in ipairs(CapsuleStrokes) do
+        cs.Color = getRGBColor(i * 0.3)
+    end
+    for Btn in pairs(HoveredBtns) do
+        Btn.BackgroundColor3 = col
+    end
+end)
+
+-- ============================================================
+-- DRAG
+-- ============================================================
+local Dragging, DragStart, StartPos = false, nil, nil
+
+TopBar.InputBegan:Connect(function(Input)
+    if Input.UserInputType == Enum.UserInputType.Touch
+    or Input.UserInputType == Enum.UserInputType.MouseButton1 then
+        Dragging = true
+        DragStart = Input.Position
+        StartPos  = Main.Position
+        Input.Changed:Connect(function()
+            if Input.UserInputState == Enum.UserInputState.End then
+                Dragging = false
+            end
+        end)
+    end
+end)
+
+UIS.InputChanged:Connect(function(Input)
+    if Dragging and (
+        Input.UserInputType == Enum.UserInputType.Touch
+     or Input.UserInputType == Enum.UserInputType.MouseMovement
+    ) then
+        local Delta = Input.Position - DragStart
+        Main.Position = UDim2.new(
+            StartPos.X.Scale, StartPos.X.Offset + Delta.X,
+            StartPos.Y.Scale, StartPos.Y.Offset + Delta.Y
+        )
+    end
+end)
+
+-- ============================================================
+-- MINIMIZAR / MAXIMIZAR
+-- ============================================================
+local Open    = true
+local FullSize = Main.Size
+
+MinBtn.MouseButton1Click:Connect(function()
+    if not Open then return end
+    Open = false
+    Sidebar.Visible = false
+    Content.Visible = false
+    Fix.Visible     = false
+    TweenService:Create(Main, TweenInfo.new(0.25,Enum.EasingStyle.Quart), {Size=UDim2.fromOffset(270,42)}):Play()
+end)
+
+MaxBtn.MouseButton1Click:Connect(function()
+    if Open then return end
+    Open = true
+    Fix.Visible     = true
+    Sidebar.Visible = true
+    Content.Visible = true
+    TweenService:Create(Main, TweenInfo.new(0.25,Enum.EasingStyle.Quart), {Size=FullSize}):Play()
+end)
